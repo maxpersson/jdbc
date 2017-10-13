@@ -1,7 +1,4 @@
-import java.sql.Connection;
-import java.sql.DriverManager;
-import java.sql.PreparedStatement;
-import java.sql.SQLException;
+import java.sql.*;
 
 /**
  * Created by Max on 12-10-2017.
@@ -10,14 +7,14 @@ public class JDBCCon {
 
     private Connection myConn;
 
-    public Connection connect() {
+    public void connect() {
         try {
             myConn = DriverManager.getConnection("jdbc:mysql://localhost:3306/test", "root", "tds4nvw7");
+            myConn.setTransactionIsolation(myConn.TRANSACTION_READ_COMMITTED);
             System.out.println("connection established");
         }catch (SQLException e){
             e.printStackTrace();
         }
-        return myConn;
     }
     public void disconnect(){
         try {
@@ -41,7 +38,7 @@ public class JDBCCon {
 
             insertData.executeUpdate();
 
-            myConn.commit();
+
 
         } catch (SQLException e) {
             if (myConn != null) {
@@ -65,5 +62,22 @@ public class JDBCCon {
             }
         }
         }
+    public void queryData(){
+        ResultSet myRs = null;
+        Statement myStmt = null;
+
+        try {
+            // 3.1 Execute SQL query
+            myStmt = myConn.createStatement();
+            myRs = myStmt.executeQuery("SELECT * FROM ships");
+            System.out.println(myRs);
+            // 4. Process the result set
+            while (myRs.next()) {
+                System.out.println(myRs.getString("name") + ", " + myRs.getString("class"));
+            }
+        } catch (Exception exc) {
+            exc.printStackTrace();
+        }
+    }
     }
 
